@@ -28,6 +28,9 @@ namespace Auth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IUserStore<User>, UserStore>();
+            services.AddTransient<IUserRoleStore<User>, UserRoleStore>();
+            services.AddTransient<IRoleStore<UserRole>, RoleStore>();
             services.AddIdentity<User, UserRole>();
             services.AddControllers();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -49,8 +52,6 @@ namespace Auth
                 };
                 options.LoginPath = null;
             });
-            services.AddTransient<IUserStore<User>, UserStore>();
-            services.AddTransient<IUserRoleStore<User>, UserRoleStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
