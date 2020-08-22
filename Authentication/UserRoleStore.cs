@@ -7,8 +7,6 @@ namespace Auth.Authentication
 {
     public class UserRoleStore : IUserRoleStore<User>
     {
-        public int Id { get; set; }
-
         public Task AddToRoleAsync(User user, string roleName, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
@@ -26,7 +24,7 @@ namespace Auth.Authentication
 
         public void Dispose()
         {
-            throw new System.NotImplementedException();
+
         }
 
         public Task<User> FindByIdAsync(string userId, CancellationToken cancellationToken)

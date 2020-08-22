@@ -17,11 +17,6 @@ namespace Auth.Authentication
             throw new NotImplementedException();
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<User> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -62,6 +57,11 @@ namespace Auth.Authentication
         public Task<IdentityResult> UpdateAsync(User user, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

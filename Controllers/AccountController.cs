@@ -37,22 +37,27 @@ namespace Auth.Controllers
         [Route("SignIn")]
         public async Task SignIn([FromBody] LoginCredential credential)
         {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, "Jiuchenm"),
-                new Claim("LastChanged", "")
-            };
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
             var identityUser = await _userManager.FindByNameAsync(credential.Username);
 
             var result = _userManager.PasswordHasher.VerifyHashedPassword(identityUser, identityUser.PasswordHash, credential.Password);
+
+            if (result != PasswordVerificationResult.Success)
+            {
+                throw new InvalidOperationException("Wrong Password");
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, "Jiuchenm"),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
         }
 
         [HttpPost]
+        [Route("SignOut")]
         public async Task SignOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

@@ -28,30 +28,32 @@ namespace Auth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<SPACookieAuthenticationEvents>();
+
             services.AddTransient<IUserStore<User>, UserStore>();
-            services.AddTransient<IUserRoleStore<User>, UserRoleStore>();
-            services.AddTransient<IRoleStore<UserRole>, RoleStore>();
-            services.AddIdentity<User, UserRole>();
-            services.AddControllers();
+            // services.AddTransient<IUserRoleStore<User>, UserRoleStore>();
+            // services.AddTransient<IRoleStore<UserRole>, RoleStore>();
+
+            services.AddIdentityCore<User>();
+            // services.AddIdentity<User, UserRole>();
+
+            // services.ConfigureApplicationCookie(options =>
+            // {
+            //     options.LoginPath = null;
+            //     options.EventsType = typeof(SPACookieAuthenticationEvents);
+            //     options.SlidingExpiration = true;
+            // });
+
+            services.AddDataProtection();
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
+            .AddCookie(options =>
             {
-                options.SlidingExpiration = true;
-                options.Events = new CookieAuthenticationEvents
-                {
-                    OnRedirectToLogin = redirectContext =>
-                    {
-                        redirectContext.HttpContext.Response.StatusCode = 401;
-                        return Task.CompletedTask;
-                    },
-                    OnRedirectToAccessDenied = redirectContext =>
-                    {
-                        redirectContext.HttpContext.Response.StatusCode = 403;
-                        return Task.CompletedTask;
-                    }
-                };
                 options.LoginPath = null;
+                options.EventsType = typeof(SPACookieAuthenticationEvents);
             });
+
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

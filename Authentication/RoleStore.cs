@@ -19,7 +19,7 @@ namespace Auth.Authentication
 
         public void Dispose()
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public Task<UserRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
