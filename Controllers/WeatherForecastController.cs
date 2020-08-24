@@ -33,6 +33,7 @@ namespace Auth.Controllers
 
         [HttpGet]
         [Authorize]
+        [Authorize("Admin")]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
@@ -46,13 +47,16 @@ namespace Auth.Controllers
         }
 
         [HttpGet]
-        [Route("GetDecode")]
+        [Authorize]
+        [Route("unsafe_GetCookieDecoded")]
         public object GetDecode()
         {
-            // Console.WriteLine(HttpContext.Request.Cookies.First(x => x.Key == ".AspNetCore.Cookies").Value);
-            var protectedData = Base64UrlTextEncoder.Decode("CfDJ8ARBIV43isBFi0u3uT9Osau7GudS9c2nTsZvgZF-ugOymNRpRKPUTdB_CNlbO7CN1AVTK48FaP1yIzDOFLEkX9LxL95U3DfwWYMWxEj_v0yumzC1Xi3-rs1SlDwyanNNsYI_oU4n_aqLA4hoJGy2yh1A6zw9wePU4cFCSLJ7IwpkwO5hn0Kurk18Bsn17pOfjZJMycIZVAJ_qk11DmSZfbBghPhmMJqkpxALLWkLWWu4-GaouO1c71zpwW-Ce7G0cPzhebJDyHfdMc9kEVTSxce87ITW3iVQLyFofRMUbAA7");
+            var securedValue = HttpContext.Request.Cookies.First(x => x.Key == ".AspNetCore.Cookies").Value;
+            Console.WriteLine(securedValue);
 
-            var protector = _protectionProvider.CreateProtector("Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationMiddleware", CookieAuthenticationDefaults.AuthenticationScheme, "v2").CreateProtector("v3").CreateProtector("v4");
+            var protectedData = Base64UrlTextEncoder.Decode(securedValue);
+
+            var protector = _protectionProvider.CreateProtector("Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationMiddleware", CookieAuthenticationDefaults.AuthenticationScheme, "v2");
 
             var userData = protector.Unprotect(protectedData);
 
@@ -60,7 +64,7 @@ namespace Auth.Controllers
 
             return new
             {
-                Claims = deserialized.Principal.Claims.Select(x => new { Name = x.Type, Value = x.Value }),
+                Claims = deserialized.Principal.Claims.Select(x => new { Type = x.Type, Value = x.Value }),
                 Properties = deserialized.Properties
             };
         }

@@ -14,9 +14,17 @@ namespace Microsoft.AspNetCore.Authentication.Cookies
     {
         public override Task RedirectToLogin(RedirectContext<CookieAuthenticationOptions> context) => OnRedirectToLogin(context);
 
+        public override Task RedirectToAccessDenied(RedirectContext<CookieAuthenticationOptions> context) => OnRedirectToAccessDenied(context);
+
         public new Func<RedirectContext<CookieAuthenticationOptions>, Task> OnRedirectToLogin { get; set; } = redirectContext =>
         {
             redirectContext.HttpContext.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        };
+
+        public new Func<RedirectContext<CookieAuthenticationOptions>, Task> OnRedirectToAccessDenied { get; set; } = redirectContext =>
+        {
+            redirectContext.HttpContext.Response.StatusCode = 403;
             return Task.CompletedTask;
         };
     }

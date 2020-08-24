@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Auth.Authentication;
+using Auth.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,26 +33,24 @@ namespace Auth
             services.AddTransient<SPACookieAuthenticationEvents>();
 
             services.AddTransient<IUserStore<User>, UserStore>();
-            // services.AddTransient<IUserRoleStore<User>, UserRoleStore>();
-            // services.AddTransient<IRoleStore<UserRole>, RoleStore>();
 
             services.AddIdentityCore<User>();
-            // services.AddIdentity<User, UserRole>();
-
-            // services.ConfigureApplicationCookie(options =>
-            // {
-            //     options.LoginPath = null;
-            //     options.EventsType = typeof(SPACookieAuthenticationEvents);
-            //     options.SlidingExpiration = true;
-            // });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.EventsType = typeof(SPACookieAuthenticationEvents);
-            });
+                .AddCookie(options =>
+                {
+                    options.EventsType = typeof(SPACookieAuthenticationEvents);
+                });
 
             services.AddControllers();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy =>
+                {
+                    policy.Requirements.Add(new AdminAuthorizationRequirement());
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

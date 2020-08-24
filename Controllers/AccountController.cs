@@ -49,6 +49,7 @@ namespace Auth.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, "Jiuchenm"),
+                new Claim(ClaimTypes.Role, identityUser.IsAdmin ? "Admin" : "Normal"),
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
