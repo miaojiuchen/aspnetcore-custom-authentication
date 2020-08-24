@@ -44,12 +44,9 @@ namespace Auth
             //     options.SlidingExpiration = true;
             // });
 
-            services.AddDataProtection();
-
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
-                options.LoginPath = null;
                 options.EventsType = typeof(SPACookieAuthenticationEvents);
             });
 
