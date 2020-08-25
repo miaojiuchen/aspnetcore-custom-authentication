@@ -39,6 +39,7 @@ namespace Auth
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
+                    options.Cookie.Name = CookieBuildOptions.AuthenticationCookieName;
                     options.EventsType = typeof(SPACookieAuthenticationEvents);
                 });
 

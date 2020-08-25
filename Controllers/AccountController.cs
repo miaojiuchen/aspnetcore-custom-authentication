@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Auth.Authentication;
+using Auth.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -49,7 +50,7 @@ namespace Auth.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, "Jiuchenm"),
-                new Claim(ClaimTypes.Role, identityUser.IsAdmin ? "Admin" : "Normal"),
+                new Claim(ClaimTypes.Role, identityUser.IsAdmin ? AdminAuthorizationRequirement.AdminRoleName : AdminAuthorizationRequirement.NormalRoleName),
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

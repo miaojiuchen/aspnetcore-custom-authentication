@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Auth.Authentication;
+using Auth.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -32,8 +34,7 @@ namespace Auth.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        [Authorize("Admin")]
+        [Authorize(AdminAuthorizationRequirement.AdminRoleName)]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
@@ -51,8 +52,7 @@ namespace Auth.Controllers
         [Route("unsafe_GetCookieDecoded")]
         public object GetDecode()
         {
-            var securedValue = HttpContext.Request.Cookies.First(x => x.Key == ".AspNetCore.Cookies").Value;
-            Console.WriteLine(securedValue);
+            var securedValue = HttpContext.Request.Cookies.First(x => x.Key == CookieBuildOptions.AuthenticationCookieName).Value;
 
             var protectedData = Base64UrlTextEncoder.Decode(securedValue);
 
@@ -64,8 +64,9 @@ namespace Auth.Controllers
 
             return new
             {
-                Claims = deserialized.Principal.Claims.Select(x => new { Type = x.Type, Value = x.Value }),
-                Properties = deserialized.Properties
+                Claims = deserialized.Principal.Claims.Select(x => new { x.Type, x.Value }),
+                Properties = deserialized.Properties,
+                Identities = deserialized.Principal.Identities.Select(x => new { x.AuthenticationType, x.Name })
             };
         }
     }
