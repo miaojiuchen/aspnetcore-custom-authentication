@@ -65,22 +65,22 @@ namespace Auth
                     policy.Requirements.Add(new AdminAuthorizationRequirement());
                 });
 
-                options.AddPolicy("Github", policy =>
+                options.AddPolicy("OAuth-Github", policy =>
                 {
-                    policy.Requirements.Add(new DenyGithubAnonymousAuthorizationRequirement());
+                    policy.RequireAuthenticatedUser();
                 });
             });
 
-            const string OAuthGithubScheme = "OAuth-Github";
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = OAuthGithubScheme;
+                options.DefaultScheme = AuthenticationSchemeConstants.OAuthGithubCookieScheme;
+                options.DefaultChallengeScheme = AuthenticationSchemeConstants.OAuthGithubScheme;
             })
-            .AddCookie(OAuthGithubScheme, options =>
-            {
-                options.Cookie.Name = "oauth-github";
-            })
-            .AddOAuth("Github", options =>
+            .AddCookie(AuthenticationSchemeConstants.OAuthGithubCookieScheme, options =>
+              {
+                  options.Cookie.Name = "oauth-github";
+              })
+            .AddOAuth(AuthenticationSchemeConstants.OAuthGithubScheme, options =>
             {
                 options.ClientId = "d540b7fcd950430e61cc";
                 options.ClientSecret = "1f8f30562f2541da8e1d748fe573627476fa468c";
