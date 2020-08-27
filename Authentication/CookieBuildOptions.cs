@@ -2,6 +2,6 @@ namespace Auth.Authentication
 {
     public class CookieBuildOptions
     {
-        public static readonly string AuthenticationCookieName = "auth";
+        public static readonly string AuthenticationCookieName = "basic-auth";
     }
 }
