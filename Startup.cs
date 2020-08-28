@@ -1,28 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Auth.Authentication;
 using Auth.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Auth
 {
@@ -44,8 +36,8 @@ namespace Auth
 
             services.AddIdentityCore<User>();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
+            services.AddAuthentication(AuthenticationConstants.BasicAuthScheme)
+                .AddCookie(AuthenticationConstants.BasicAuthScheme, options =>
                 {
                     options.Cookie.Name = AuthenticationConstants.BasicAuthCookieName;
                     options.EventsType = typeof(SPACookieAuthenticationEvents);
@@ -62,12 +54,12 @@ namespace Auth
             {
                 options.AddPolicy(AuthenticationConstants.AdminPolicyName, policy =>
                 {
-                    policy.Requirements.Add(new AdminAuthorizationRequirement());
+                    policy.Requirements.Add(new AdminRoleRequirement());
                 });
 
                 options.AddPolicy(AuthenticationConstants.OAuthGithubPolicyName, policy =>
                 {
-                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new GithubLoginRequirement());
                 });
             });
 
@@ -107,9 +99,12 @@ namespace Auth
                         var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
                         response.EnsureSuccessStatusCode();
 
-                        var responseJson = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+                        var responseText = await response.Content.ReadAsStringAsync();
+                        var responseJson = JsonDocument.Parse(responseText);
 
-                        responseJson.WriteTo(new Utf8JsonWriter(Console.OpenStandardOutput(), new JsonWriterOptions { Indented = true }));
+                        var jsonWriter = new Utf8JsonWriter(Console.OpenStandardOutput(), new JsonWriterOptions { Indented = true });
+                        responseJson.WriteTo(jsonWriter);
+                        jsonWriter.Flush();
 
                         context.RunClaimActions(responseJson.RootElement);
                     }

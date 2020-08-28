@@ -18,9 +18,9 @@ namespace Auth.Controllers
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<ResourceForecastController> _logger;
         private readonly UserManager<User> _userManager;
-        public AccountController(ILogger<WeatherForecastController> logger, UserManager<User> userManager)
+        public AccountController(ILogger<ResourceForecastController> logger, UserManager<User> userManager)
         {
             _logger = logger;
             _userManager = userManager;
@@ -50,7 +50,7 @@ namespace Auth.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, "Jiuchenm"),
-                new Claim(ClaimTypes.Role, identityUser.IsAdmin ? AdminAuthorizationRequirement.AdminRoleName : AdminAuthorizationRequirement.NormalRoleName),
+                new Claim(ClaimTypes.Role, identityUser.IsAdmin ? AdminRoleRequirement.AdminRoleName : AdminRoleRequirement.NormalRoleName),
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

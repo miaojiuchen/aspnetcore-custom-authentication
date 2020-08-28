@@ -15,17 +15,18 @@ using Microsoft.Extensions.Logging;
 namespace Auth.Controllers
 {
     [ApiController]
-    [Route("weather")]
-    public class WeatherForecastController : ControllerBase
+    [Route("resource")]
+    public class ResourceForecastController : ControllerBase
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IDataProtectionProvider protectionProvider)
+        public ResourceForecastController(ILogger<ResourceForecastController> logger, IDataProtectionProvider protectionProvider)
         {
             _dataProtectionProvider = protectionProvider;
         }
 
         [HttpGet]
+        [Route("protected_by_admin_policy")]
         [Authorize(AuthenticationConstants.AdminPolicyName)]
         public string Get()
         {
@@ -33,10 +34,11 @@ namespace Auth.Controllers
         }
 
         [HttpGet]
+        [Route("GetGithub")]
         [Authorize(AuthenticationConstants.OAuthGithubPolicyName)]
         public object GetGithub()
         {
-            return HttpContext.User.Claims;
+            return HttpContext.User.Claims.Select(x => new { x.Type, x.Value });
         }
 
         [HttpGet]
