@@ -26,14 +26,14 @@ namespace Auth.Controllers
         }
 
         [HttpGet]
-        [Authorize("Admin")]
+        [Authorize(AuthenticationConstants.AdminPolicyName)]
         public string Get()
         {
             return "Now you see me";
         }
 
         [HttpGet]
-        [Authorize("OAuth-Github")]
+        [Authorize(AuthenticationConstants.OAuthGithubPolicyName)]
         public object GetGithub()
         {
             return HttpContext.User.Claims;

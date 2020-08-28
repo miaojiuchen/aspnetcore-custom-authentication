@@ -47,7 +47,7 @@ namespace Auth
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.Cookie.Name = "basic-auth";
+                    options.Cookie.Name = AuthenticationConstants.BasicAuthCookieName;
                     options.EventsType = typeof(SPACookieAuthenticationEvents);
                 });
 
@@ -55,17 +55,17 @@ namespace Auth
 
             services.AddRazorPages(options =>
             {
-                options.Conventions.AuthorizePage("/UserInfo", "Github");
+                options.Conventions.AuthorizePage("/UserInfo", AuthenticationConstants.OAuthGithubPolicyName);
             });
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Admin", policy =>
+                options.AddPolicy(AuthenticationConstants.AdminPolicyName, policy =>
                 {
                     policy.Requirements.Add(new AdminAuthorizationRequirement());
                 });
 
-                options.AddPolicy("OAuth-Github", policy =>
+                options.AddPolicy(AuthenticationConstants.OAuthGithubPolicyName, policy =>
                 {
                     policy.RequireAuthenticatedUser();
                 });
@@ -73,14 +73,14 @@ namespace Auth
 
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = AuthenticationSchemeConstants.OAuthGithubCookieScheme;
-                options.DefaultChallengeScheme = AuthenticationSchemeConstants.OAuthGithubScheme;
+                options.DefaultScheme = AuthenticationConstants.OAuthGithubCookieScheme;
+                options.DefaultChallengeScheme = AuthenticationConstants.OAuthGithubScheme;
             })
-            .AddCookie(AuthenticationSchemeConstants.OAuthGithubCookieScheme, options =>
+            .AddCookie(AuthenticationConstants.OAuthGithubCookieScheme, options =>
               {
-                  options.Cookie.Name = "oauth-github";
+                  options.Cookie.Name = AuthenticationConstants.OAuthGithubCookieName;
               })
-            .AddOAuth(AuthenticationSchemeConstants.OAuthGithubScheme, options =>
+            .AddOAuth(AuthenticationConstants.OAuthGithubScheme, options =>
             {
                 options.ClientId = "d540b7fcd950430e61cc";
                 options.ClientSecret = "1f8f30562f2541da8e1d748fe573627476fa468c";
