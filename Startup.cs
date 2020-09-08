@@ -41,6 +41,8 @@ namespace Auth
                 {
                     options.Cookie.Name = AuthenticationConstants.BasicAuthCookieName;
                     options.EventsType = typeof(SPACookieAuthenticationEvents);
+                    options.Cookie.Expiration = TimeSpan.FromDays(3);
+                    options.ExpireTimeSpan = TimeSpan.FromDays(3);
                 });
 
             services.AddControllers();
